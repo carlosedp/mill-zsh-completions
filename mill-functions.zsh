@@ -53,10 +53,10 @@ function prompt_mill_version() {
     if [[ -n "$latest_mill_version" && $millver == *"-"* && "$millver" == "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]
     then
         # Project uses a snapshot version which is up-to-date, show current version in yellow
-        p10k segment -s "NOT_UP_TO_DATE" -f yellow -i '' -t "⇡ Mill $millver"
+        p10k segment -s "UP_TO_DATE" -f yellow -i '' -t "⇡ Mill $millver"
     elif [[ -n "$latest_mill_version" && $millver == *"-"* && "$millver" != "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]; then
         # Project uses a snapshot version which is outdated, show current version and latest available snapshot in yellow
-        p10k segment -s "UP_TO_DATE" -f yellow -i '' -t "⇣ Mill $millver  [$latest_mill_version_snap]"
+        p10k segment -s "NOT_UP_TO_DATE" -f red -i '' -t "⇣ Mill $millver  [$latest_mill_version_snap]"
     elif [[ -n "$latest_mill_version" && "$millver" != "$latest_mill_version" ]]; then
         # Mill is not up to date, show current version and latest version brackets in red
         p10k segment -s "NOT_UP_TO_DATE" -f red -i '' -t "⇣ Mill $millver  [$latest_mill_version]"
