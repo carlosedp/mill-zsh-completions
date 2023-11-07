@@ -7,13 +7,20 @@
 #       ...
 #       )
 function prompt_mill_version() {
-    # local millver
+    local millver
     if [ -f ".mill-version" ] ; then
         millver="$(<.mill-version)"
     else
         # Check if this is a mill project
         if [ -f "build.sc" ] ; then
-          millver="$(mill --version | head -1 | cut -d' ' -f5) || echo 'unknown'"
+          if [ -f "mill" ] ; then
+            millver="$(./mill --version | head -1 | cut -d' ' -f5)"
+          elif [ -x "$(command -v mill)" ] >/dev/null 2>&1; then
+            millver="$(mill --version | head -1 | cut -d' ' -f5)"
+          else
+            millver="unknown"
+          fi
+        millver="$millver (create .mill-version)"
         else
           return
         fi
@@ -50,11 +57,11 @@ function prompt_mill_version() {
     latest_mill_version=$(<"$cache_file")
     latest_mill_version_snap=$(<"$cache_file_snap")
 
-    if [[ -n "$latest_mill_version" && $millver == *"-"* && "$millver" == "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]
+    if [[ -n "$latest_mill_version" && $millver =~ \d+.\d+.\d+-\d+-.* && "$millver" == "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]
     then
         # Project uses a snapshot version which is up-to-date, show current version in yellow
         p10k segment -s "UP_TO_DATE" -f yellow -i '' -t "⇡ Mill $millver"
-    elif [[ -n "$latest_mill_version" && $millver == *"-"* && "$millver" != "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]; then
+    elif [[ -n "$latest_mill_version" && $millver =~ \d+.\d+.\d+-\d+-.* && "$millver" != "$latest_mill_version_snap" && "$millver" != $(echo "$latest_mill_version" | cut -d- -f1) ]]; then
         # Project uses a snapshot version which is outdated, show current version and latest available snapshot in yellow
         p10k segment -s "NOT_UP_TO_DATE" -f red -i '' -t "⇣ Mill $millver  [$latest_mill_version_snap]"
     elif [[ -n "$latest_mill_version" && "$millver" != "$latest_mill_version" ]]; then
