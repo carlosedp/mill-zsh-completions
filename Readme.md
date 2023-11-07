@@ -7,6 +7,12 @@ It can be used as `./mill <tab>` that lists all modules, root level tasks and fl
 
 The dots between modules and tasks are smartly added. The mill build data is cached for faster execution after the initial run. The cache is invalidated if `build.sc` is changed.
 
+It also adds to [P10K](https://github.com/romkatv/powerlevel10k) Zsh theme the current Mill version for the project dir and if there are updates to Mill.
+
+![prompt sample](./img/prompt-sample.png)
+
+There is also a convenience function `millupd` to allow updating the current project Mill version. It updates `.mill-version` with latest stable version or if called with `-s` argument it updates to latest snapshot version.
+
 ## Installation
 
 ### For Oh-My-Zsh
@@ -41,3 +47,13 @@ git clone https://github.com/carlosedp/mill-zsh-completions.git
 ```
 
 And source mill-zsh-completions.plugin.zsh or add code to zshrc or any startup script
+
+To use the P10K prompt element, add `mill_version` to the `p10k.zsh` file as in:
+
+```shell
+  #       typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  #       status # already exists
+  #       ...
+  #       mill_version
+  #       ...
+```
