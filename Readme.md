@@ -7,6 +7,8 @@ It can be used as `./mill <tab>` that lists all modules, root level tasks and fl
 
 The dots between modules and tasks are smartly added. The mill build data is cached for faster execution after the initial run. The cache is invalidated if `build.sc` is changed.
 
+[![asciicast](https://asciinema.org/a/AxkSqsYvz0god8sZWzfD4Dmva.svg)](https://asciinema.org/a/AxkSqsYvz0god8sZWzfD4Dmva)
+
 It also adds to [P10K](https://github.com/romkatv/powerlevel10k) Zsh theme the current Mill version for the project dir and if there are updates to Mill.
 
 ![prompt sample](./img/prompt-sample.png)
