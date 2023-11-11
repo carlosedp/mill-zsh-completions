@@ -74,7 +74,7 @@ _mill() {
     local -a aliases
     aliases+=($(sed -n '/extends Aliases {/,/\}}/p' build.sc | grep def | tr -s ' ' | cut -d\  -f3))
     __mill_debug "Target aliases: " "${aliases[@]}"
-    compadd -S . -q "${aliases[@]}"
+    compadd -q "${aliases[@]}"
   # Query mill root commands or flags
   else
     __mill_debug "Query root commands"
