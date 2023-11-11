@@ -77,6 +77,8 @@ _mill() {
     compadd -S . -q "${aliases[@]}"
   # Query mill root commands or flags
   else
+    __mill_debug "Query root commands"
+    _query_with_cache "root"
     if [[ $(sed -n '/extends Aliases {/,/\}}/p' build.sc) ]]; then
       __mill_debug "Aliases found, adding commands"
       local -a _descriptions _values
@@ -90,8 +92,6 @@ _mill() {
       )
       compadd -d _descriptions -a _values
     fi
-    __mill_debug "Query root commands"
-    _query_with_cache "root"
     _arguments -C "${opts[@]}"
   fi
 }
