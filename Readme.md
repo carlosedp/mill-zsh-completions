@@ -48,6 +48,8 @@ git clone https://github.com/carlosedp/mill-zsh-completions.git
 
 And source mill-zsh-completions.plugin.zsh or add code to zshrc or any startup script
 
+## Using P10k theme prompt element
+
 To use the P10K prompt element, add `mill_version` to the `p10k.zsh` file as in:
 
 ```shell
