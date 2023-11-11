@@ -79,7 +79,8 @@ _mill() {
   else
     __mill_debug "Query root commands"
     _query_with_cache "root"
-    if [[ $(sed -n '/extends Aliases {/,/\}}/p' build.sc) ]]; then
+    aliasobj=$(grep "extends Aliases" build.sc | cut -d" " -f2)
+    if [[ $aliasobj ]]; then
       __mill_debug "Aliases found, adding commands"
       local -a _descriptions _values
       _descriptions=(
@@ -123,6 +124,11 @@ _query_with_cache() {
     milltargetcmds=($(mill --disable-ticker resolve "${target}" 2>/dev/null))
   fi
   __mill_debug "Target args: " "${milltargetcmds[@]}"
+  # Remove the aliases mill target from the list
+  aliasobj=$(grep "extends Aliases" build.sc | cut -d" " -f2)
+  if [[ $aliasobj ]]; then
+    milltargetcmds=("${milltargetcmds[@]/$aliasobj/}")
+  fi
   compadd -S . -q "${milltargetcmds[@]}"
 }
 
