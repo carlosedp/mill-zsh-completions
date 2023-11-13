@@ -84,10 +84,12 @@ _mill() {
       __mill_debug "Aliases found, adding commands"
       local -a _descriptions _values
       _descriptions=(
+        'Alias/help           -- aliases plugin help'
         'Alias/list           -- list all aliases'
         'Alias/run            -- run alias'
       )
       _values=(
+        'Alias/help'
         'Alias/list'
         'Alias/run'
       )
