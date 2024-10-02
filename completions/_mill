@@ -59,7 +59,12 @@ _mill() {
   lastChar=${lastParam[-1]}
 
   __mill_debug "Vars: state: ${state} / line: ${line} / lastParam: ${lastParam} / lastChar: ${lastChar}"
-
+  # Check if there is a build.sc or build.mill file and save in a variable
+  if [[ -f build.sc ]]; then
+    BUILDFILE="build.sc"
+  elif [[ -f build.mill ]]; then
+    BUILDFILE="build.mill"
+  fi
   if [[ ${lastChar} == '.' ]]; then # Query target
     __mill_debug "Query tasks for ${lastParam}"
     _query_with_cache "${lastParam}"
@@ -72,14 +77,14 @@ _mill() {
   elif [[ ${line} == *"Alias/run"* ]]; then
     __mill_debug "Listing aliases"
     local -a aliases
-    aliases+=($(sed -n '/extends Aliases {/,/\}}/p' build.sc | grep def | tr -s ' ' | cut -d\  -f3))
+    aliases+=($(sed -n '/extends Aliases {/,/\}}/p' "${BUILDFILE}" | grep def | tr -s ' ' | cut -d\  -f3))
     __mill_debug "Target aliases: " "${aliases[@]}"
     compadd -q "${aliases[@]}"
   # Query mill root commands or flags
   else
     __mill_debug "Query root commands"
     _query_with_cache "root"
-    aliasobj=$(grep "extends Aliases" build.sc | cut -d" " -f2)
+    aliasobj=$(grep "extends Aliases" "${BUILDFILE}" | cut -d" " -f2)
     if [[ $aliasobj ]]; then
       __mill_debug "Aliases found, adding commands"
       local -a _descriptions _values
@@ -107,17 +112,23 @@ _query_with_cache() {
   else
     target="${1}_"
   fi
+  # Check if there is a build.sc or build.mill file and save in a variable
+  if [[ -f build.sc ]]; then
+    BUILDFILE="build.sc"
+  elif [[ -f build.mill ]]; then
+    BUILDFILE="build.mill"
+  fi
   target_clean=$(echo "${target//\\/}")
   target="${target_clean}"
   __mill_debug "Query cache param: ${1}"
   __mill_debug "Query target: ${target}"
   if [[ "${cachedata}" == "true" ]]; then
     # Cache the mill tasks
-    if test "$(find ${cachepath}/ -name "${cachefile}-${target}" -mmin -${cachetime} 2>/dev/null)" && [[ "${cachepath}/${cachefile}-${target}" -nt build.sc ]]; then
-      __mill_debug "Cache file ${cachepath}/${cachefile}-${target} exists and is newer than ${cachetime} mins and build.sc file not changed."
+    if test "$(find ${cachepath}/ -name "${cachefile}-${target}" -mmin -${cachetime} 2>/dev/null)" && [[ "${cachepath}/${cachefile}-${target}" -nt "${BUILDFILE}" ]]; then
+      __mill_debug "Cache file ${cachepath}/${cachefile}-${target} exists and is newer than ${cachetime} mins and build.sc/build.mill file not changed."
       milltargetcmds=($(cat "${cachepath}/${cachefile}-${target}"))
     else
-      __mill_debug "Cache file ${cachepath}/${cachefile}-${target} does not exist or is older than ${cachetime} or build.sc file changed."
+      __mill_debug "Cache file ${cachepath}/${cachefile}-${target} does not exist or is older than ${cachetime} or build.sc/build.mill file changed."
       milltargetcmds=($(mill --disable-ticker resolve "${target}" 2>/dev/null))
       echo "${milltargetcmds[@]}" >"${cachepath}/${cachefile}-${target}"
     fi
@@ -127,7 +138,7 @@ _query_with_cache() {
   fi
   __mill_debug "Target args: " "${milltargetcmds[@]}"
   # Remove the aliases mill target from the list
-  aliasobj=$(grep "extends Aliases" build.sc | cut -d" " -f2)
+  aliasobj=$(grep "extends Aliases" "${BUILDFILE}" | cut -d" " -f2)
   if [[ $aliasobj ]]; then
     milltargetcmds=("${milltargetcmds[@]/$aliasobj/}")
   fi

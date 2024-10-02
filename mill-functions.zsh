@@ -11,7 +11,7 @@ function prompt_mill_version() {
         millver="$(<.mill-version)"
     else
         # Check if this is a mill project
-        if [ -f "build.sc" ]; then
+        if [ -f "build.sc" ] || [ -f "build.mill" ]; then
             if [ -f "mill" ]; then
                 millver="$(./mill --version | head -1 | cut -d' ' -f5)"
             elif [ -x "$(command -v mill)" ] >/dev/null 2>&1; then

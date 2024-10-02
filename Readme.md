@@ -5,7 +5,7 @@ This plugin adds Scala [Mill build tool](http://mill-build.com/mill/Intro_to_Mil
 It can be used as `./mill <tab>` that lists all modules, root level tasks and flags or
 `./mill mymodule.<tab>` showing tasks for specific module. It works with deeper tasks as well like `./mill mymodule.test <tab>`.
 
-The dots between modules and tasks are smartly added. The mill build data is cached for faster execution after the initial run. The cache is invalidated if `build.sc` is changed. For aliases, check my https://github.com/carlosedp/mill-aliases plugin.
+The dots between modules and tasks are smartly added. The mill build data is cached for faster execution after the initial run. The cache is invalidated if `build.sc` or `build.mill` is changed. For aliases, check my <https://github.com/carlosedp/mill-aliases> plugin.
 
 [![asciicast](https://asciinema.org/a/AxkSqsYvz0god8sZWzfD4Dmva.svg)](https://asciinema.org/a/AxkSqsYvz0god8sZWzfD4Dmva)
 
