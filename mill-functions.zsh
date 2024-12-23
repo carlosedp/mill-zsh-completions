@@ -1,3 +1,17 @@
+# Get the available mill binary or script
+function mill_executable() {
+    local millexec
+    if [[ -x "mill" ]]; then
+        millexec="./mill"
+    elif [ -x "$(command -v mill)" ] >/dev/null 2>&1; then
+        millexec="mill"
+    else
+        echo "No mill executable found in the current directory or in PATH."
+        return 1
+    fi
+    "$millexec" "$@"
+}
+
 # This function is used by Zsh P10k prompt. To use, add `mill_version` in the `p10k.zsh` file:
 #       typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 #       status # already exists
@@ -12,13 +26,7 @@ function prompt_mill_version() {
     else
         # Check if this is a mill project
         if [ -f "build.sc" ] || [ -f "build.mill" ] || [ -f "build.mill.scala" ]; then
-            if [ -f "mill" ]; then
-                millver="$(./mill --version | head -1 | cut -d' ' -f5)"
-            elif [ -x "$(command -v mill)" ] >/dev/null 2>&1; then
-                millver="$(mill --version | head -1 | cut -d' ' -f5)"
-            else
-                millver="unknown"
-            fi
+            millVer="$(mill_executable --version | head -1 | cut -d' ' -f5)"
             millver="$millver (create .mill-version)"
         else
             return

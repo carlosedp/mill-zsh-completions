@@ -104,6 +104,20 @@ _mill() {
   fi
 }
 
+# Get the available mill binary or script
+function mill_executable() {
+  local millexec
+  if [[ -x "mill" ]]; then
+    millexec="./mill"
+  elif [ -x "$(command -v mill)" ] >/dev/null 2>&1; then
+    millexec="mill"
+  else
+    echo "No mill executable found in the current directory or in PATH."
+    return 1
+  fi
+  "${millexec}" "$@"
+}
+
 _query_with_cache() {
   local target
   local -a milltargetcmds
@@ -130,12 +144,12 @@ _query_with_cache() {
       milltargetcmds=($(cat "${cachepath}/${cachefile}-${target}"))
     else
       __mill_debug "Cache file ${cachepath}/${cachefile}-${target} does not exist or is older than ${cachetime} or ${BUILDFILE} file changed."
-      milltargetcmds=($(mill --disable-ticker resolve "${target}" 2>/dev/null))
+      milltargetcmds=($(mill_executable --disable-ticker resolve "${target}" 2>/dev/null))
       echo "${milltargetcmds[@]}" >"${cachepath}/${cachefile}-${target}"
     fi
   else
     __mill_debug "No cache used"
-    milltargetcmds=($(mill --disable-ticker resolve "${target}" 2>/dev/null))
+    milltargetcmds=($(mill_executable --disable-ticker resolve "${target}" 2>/dev/null))
   fi
   __mill_debug "Target args: " "${milltargetcmds[@]}"
   # Remove the aliases mill target from the list
