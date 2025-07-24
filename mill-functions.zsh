@@ -36,6 +36,7 @@ function get_mill_version() {
   return 1
 }
 
+
 compare_semver() {
   local v1="$1"
   local v2="$2"
@@ -148,7 +149,7 @@ function prompt_mill_version() {
   # Get latest version from maven repo if cache is older than timeout
   if [[ ! (-f "$cache_file" && -f "$cache_file_snap" && $(($(date +%s) - $(stat -c '%Y' "$cache_file") < $timeout_in_seconds)) -gt 0) ]]; then
     local latest_mill_version_maven
-    latest_mill_version_maven=$(curl -sL https://repo1.maven.org/maven2/com/lihaoyi/mill-scalalib_2.13/maven-metadata.xml | grep "<version>" | grep -v "\-M" | tail -1 | sed -e 's/<[^>]*>//g' | tr -d " ")
+    latest_mill_version_maven=$(curl -sL https://repo1.maven.org/maven2/com/lihaoyi/mill-libs_3/maven-metadata.xml | grep "<version>" | grep -v "\-M" | tail -1 | sed -e 's/<[^>]*>//g' | tr -d " ")
     echo "$latest_mill_version_maven" >"$cache_file_snap"
     if [ "$keepMajorMillVersion" = true ]; then
       latest_mill_version_maven=$(echo "$latest_mill_version_maven" | cut -d- -f1)
