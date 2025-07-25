@@ -181,6 +181,16 @@ function prompt_mill_version() {
   fi
 }
 
+update_mill_version() {
+  local ver=$1
+  if [ -f ".mill-version" ]; then
+      echo "$ver" >.mill-version
+  elif [ -f "build.mill" ]; then
+    # Replace the mill version in build.mill in line "//| mill-version: 1.0.1"
+    sed -i -E "s/^\/\/\| mill-version: [0-9]+\.[0-9]+\.[0-9]+$/\/\/\| mill-version: $ver/g" build.mill
+  fi
+}
+
 # Update Scala Mill `.mill-version` file with latest build
 # Usage: `millupd` or `millupd -s` to update with latest snapshot build
 millupd() {
@@ -191,22 +201,18 @@ millupd() {
     keepMajorMillVersion=true
   fi
   rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}"/p10k-${USER}/millversion/latest_mill_version
-  latest_mill_version=$(curl -sL https://repo1.maven.org/maven2/com/lihaoyi/mill-scalalib_2.13/maven-metadata.xml | grep "<version>" | grep -v "\-M" | tail -1 | sed -e 's/<[^>]*>//g' | tr -d " ")
+  latest_mill_version=$(curl -sL https://repo1.maven.org/maven2/com/lihaoyi/mill-libs_3/maven-metadata.xml | grep "<version>" | grep -v "\-M" | tail -1 | sed -e 's/<[^>]*>//g' | tr -d " ")
   echo "Latest mill version is $latest_mill_version..."
   if [ "$keepMajorMillVersion" = true ]; then
     latest_mill_version=$(echo "$latest_mill_version" | cut -d- -f1)
     echo "Will stick to major version $latest_mill_version"
   fi
-  if [ -f ".mill-version" ]; then
-    millver=$(cat .mill-version || echo 'bug')
+  local millver=$(get_mill_version)
     if [[ -n "$latest_mill_version" && "$millver" != "$latest_mill_version" ]]; then
-      echo "Version differs, currently in $millver... updating .mill-version to $latest_mill_version."
-      echo "$latest_mill_version" >.mill-version
+      echo "Version differs, currently in $millver... updating to $latest_mill_version."
+      update_mill_version "$latest_mill_version"
+      echo "Mill version updated to $latest_mill_version."
     else
       echo "Mill is already up-to-date."
     fi
-  else
-    echo "No .mill-version file found in the current directory, creating one..."
-    echo "$latest_mill_version" >.mill-version
-  fi
 }
